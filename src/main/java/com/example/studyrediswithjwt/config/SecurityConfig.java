@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -31,10 +32,32 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/users/**").authenticated()
                 .requestMatchers("/h2-console/**").permitAll() // H2 콘솔 접근 허용
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login", "/register", "/error").permitAll()
+                    .requestMatchers("/test-password").permitAll()
                 .anyRequest().permitAll()
             )
-            .httpBasic(httpBasic -> {})
-            .formLogin(formLogin -> {})
+            .formLogin(formLogin -> formLogin
+                .loginPage("/login") // 사용자 정의 로그인 페이지
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true")
+                .usernameParameter("username") // 로그인 폼의 사용자 이름 필드 이름
+                .passwordParameter("password") // 로그인 폼의 비밀번호 필드 이름
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            .sessionManagement(session -> session
+                .maximumSessions(1)
+                .expiredUrl("/login?expired=true")
+            )
             .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.sameOrigin())); // H2 콘솔을 위한 설정
 
@@ -51,6 +74,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setHideUserNotFoundExceptions(false); // 사용자를 찾을 수 없는 예외를 숨기지 않음
 
         return new ProviderManager(authProvider);
     }

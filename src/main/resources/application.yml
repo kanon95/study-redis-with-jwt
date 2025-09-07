@@ -9,6 +9,17 @@ spring:
     enabled: true
     # user 설정 제거 - 데이터베이스 기반 인증 사용
 
+  # Redis 설정
+  data:
+    redis:
+#      host: localhost
+#      port: 6379
+      repositories:
+        enabled: false
+  # 세션 설정
+  session:
+    store-type: none # Redis 준비되기 전까지 none으로 설정
+
 
   # H2 Database 설정
   datasource:

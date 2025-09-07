@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-logout {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>홈페이지</h1>
+            <div>
+                <div sec:authorize="isAuthenticated()">
+                    <span sec:authentication="name"></span>님 환영합니다!
+                    <form th:action="@{/logout}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-logout">로그아웃</button>
+                    </form>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}" class="btn">로그인</a>
+                </div>
+            </div>
+        </div>
+
+        <div sec:authorize="isAuthenticated()">
+            <h2>인증된 사용자를 위한 콘텐츠</h2>
+            <p>이 콘텐츠는 로그인한 사용자만 볼 수 있습니다.</p>
+            <p>당신의 역할: <span sec:authentication="principal.authorities"></span></p>
+            <a th:href="@{/api/users}" class="btn">사용자 목록 보기</a>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()">
+            <h2>모든 사용자를 위한 콘텐츠</h2>
+            <p>로그인하면 더 많은 기능을 사용할 수 있습니다.</p>
+        </div>
+    </div>
+</body>
+</html>
