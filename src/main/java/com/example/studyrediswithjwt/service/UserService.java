@@ -4,6 +4,7 @@ import com.example.studyrediswithjwt.model.User;
 import com.example.studyrediswithjwt.repository.UserRepository;
 import com.example.studyrediswithjwt.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +15,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDto> getAllUsers() {
@@ -33,6 +36,10 @@ public class UserService {
 
     public UserDto createUser(UserDto userDto) {
         User user = convertToEntity(userDto);
+        // 비밀번호 인코딩
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);
     }
@@ -44,6 +51,10 @@ public class UserService {
 
         User user = convertToEntity(userDto);
         user.setId(id);
+        // 비밀번호가 제공된 경우에만 인코딩
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         User updatedUser = userRepository.save(user);
         return Optional.of(convertToDto(updatedUser));
     }
@@ -61,8 +72,8 @@ public class UserService {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .name(user.getName())
                 .phone(user.getPhone())
+                // 보안상 비밀번호는 DTO에서 제외
                 .build();
     }
 
@@ -72,7 +83,6 @@ public class UserService {
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
                 .password(userDto.getPassword())
-                .name(userDto.getName())
                 .phone(userDto.getPhone())
                 .build();
     }

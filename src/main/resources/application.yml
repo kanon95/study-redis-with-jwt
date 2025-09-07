@@ -6,7 +6,8 @@ spring:
     name: study-redis-with-jwt
 
   security:
-    enabled: false
+    enabled: true
+    # user 설정 제거 - 데이터베이스 기반 인증 사용
 
 
   # H2 Database 설정
