@@ -1,3 +1,7 @@
+# Git 원격 저장소와 머지 후 푸시 명령어
+# git pull origin main
+# git push origin main
+
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
