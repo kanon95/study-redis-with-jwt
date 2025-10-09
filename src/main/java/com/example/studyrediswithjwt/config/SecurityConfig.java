@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,6 +40,8 @@ public class SecurityConfig {
                 .requestMatchers("/test-password").permitAll()
                 .anyRequest().permitAll()
             )
+            // HTTP Basic 인증을 허용 - 개발시, postman으로 요청시, 필요. - postman header에 Authorization: Basic aG9uZzpwYXNzd29yZDEyMw==  추가
+            .httpBasic(Customizer.withDefaults())
             // 로그인 form page url, 처리 url, 성공/실패 url, id/pwd 파라미터 설정.
             .formLogin(formLogin -> formLogin
                 .loginPage("/login") // 사용자 정의 로그인 페이지
