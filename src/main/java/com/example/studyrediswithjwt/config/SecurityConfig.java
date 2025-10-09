@@ -34,6 +34,7 @@ public class SecurityConfig {
             // 인증에 따른 uri 접근 허용 설정
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/users/**").authenticated() // 인증된 경우만 접근 허용
+                .requestMatchers("/api/redis/**").permitAll() // redis api test 항상 허용
                 .requestMatchers("/h2-console/**").permitAll() // H2 콘솔 접근 허용
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/login", "/register", "/error").permitAll()
