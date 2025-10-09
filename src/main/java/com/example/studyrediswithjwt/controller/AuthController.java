@@ -50,11 +50,4 @@ public class AuthController {
         passwordTestService.testPassword();
         return "비밀번호 테스트 완료 - 콘솔 로그를 확인하세요";
     }
-
-
-
-
-
-
-
 }

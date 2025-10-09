@@ -15,10 +15,14 @@ spring:
       host: localhost
       port: 6379
       repositories:
-        enabled: false
+        enabled: true
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60s   #60초후 캐시 자동 만료 설정
   # 세션 설정
   session:
-    store-type: none # Redis 준비되기 전까지 none으로 설정
+    store-type: redis # (jdbc:db에 저장, redis: redis에 저장, none: 기본 tomcat session 메모리에 저장. )
 
 
   # H2 Database 설정

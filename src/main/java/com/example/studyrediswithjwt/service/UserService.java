@@ -4,6 +4,9 @@ import com.example.studyrediswithjwt.model.User;
 import com.example.studyrediswithjwt.repository.UserRepository;
 import com.example.studyrediswithjwt.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +32,11 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "user", key = "#id")
     public Optional<UserDto> getUserById(Long id) {
+
+        System.out.println("UserService.getUserById: " + id);
+
         return userRepository.findById(id)
                 .map(this::convertToDto);
     }
@@ -44,6 +51,7 @@ public class UserService {
         return convertToDto(savedUser);
     }
 
+    @CachePut(value = "user", key = "#userDto.id")
     public Optional<UserDto> updateUser(Long id, UserDto userDto) {
         if (!userRepository.existsById(id)) {
             return Optional.empty();
@@ -59,6 +67,7 @@ public class UserService {
         return Optional.of(convertToDto(updatedUser));
     }
 
+    @CacheEvict(value = "user", key = "#id")
     public boolean deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             return false;
